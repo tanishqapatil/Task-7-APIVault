@@ -1,0 +1,15 @@
+{
+  "name": "currency-converter",
+  "version": "1.0.0",
+  "description": "Currency Converter App",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "dotenv": "^17.3.1",
+    "express": "^4.18.2",
+    "express-rate-limit": "^7.5.1",
+    "node-cache": "^5.1.2"
+  }
+}

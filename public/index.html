@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Multi-Tool Dashboard</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f7f8fa;
+            --bg-tertiary: #eef1f4;
+            --text-primary: #1a1a2e;
+            --text-secondary: #5e6278;
+            --text-muted: #a1a5b7;
+            --border: #e4e6ef;
+            --border-focus: #0066ff;
+            --accent: #0066ff;
+            --accent-light: #e8f0fe;
+            --success: #0ea87e;
+            --success-light: #e8f9f3;
+            --danger: #f64e60;
+            --danger-light: #fee9ec;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .header {
+            margin-bottom: 32px;
+        }
+
+        .header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+        }
+
+        .header p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 4px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 4px;
+            background: var(--bg-primary);
+            padding: 4px;
+            border-radius: 10px;
+            margin-bottom: 24px;
+            border: 1px solid var(--border);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px 20px;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            font-weight: 500;
+            font-size: 0.875rem;
+            text-align: center;
+        }
+
+        .tab:hover {
+            color: var(--text-primary);
+            background: var(--bg-tertiary);
+        }
+
+        .tab.active {
+            background: var(--text-primary);
+            color: white;
+        }
+
+        .panel {
+            display: none;
+        }
+
+        .panel.active {
+            display: block;
+        }
+
+        .card {
+            background: var(--bg-primary);
+            border-radius: 12px;
+            padding: 28px;
+            border: 1px solid var(--border);
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .form-grid.single {
+            grid-template-columns: 1fr;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .input-group label {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 14px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            font-family: inherit;
+            transition: border-color 0.15s ease;
+        }
+
+        input::placeholder {
+            color: var(--text-muted);
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--border-focus);
+            background: var(--bg-primary);
+        }
+
+        select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%235e6278' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 40px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            background: var(--accent);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: background 0.15s ease;
+            font-family: inherit;
+        }
+
+        .btn:hover {
+            background: #0052cc;
+        }
+
+        .btn-secondary {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            background: var(--success-light);
+            border-radius: 8px;
+            border: 1px solid #d4f0e7;
+        }
+
+        .result-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+        }
+
+        .result-meta {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 6px;
+        }
+
+        .result-date {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #c8eadc;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            background: var(--success);
+            color: white;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            margin-left: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .error {
+            margin-top: 20px;
+            padding: 14px 16px;
+            background: var(--danger-light);
+            border-radius: 8px;
+            color: var(--danger);
+            font-size: 0.875rem;
+        }
+
+        .weather-card {
+            margin-top: 20px;
+        }
+
+        .weather-main {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .weather-icon {
+            font-size: 3rem;
+            line-height: 1;
+        }
+
+        .weather-info h3 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+        }
+
+        .weather-info .location {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .weather-info .desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: capitalize;
+        }
+
+        .weather-details {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .weather-detail {
+            background: var(--bg-secondary);
+            padding: 14px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .weather-detail .value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .weather-detail .label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .rates-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .rates-base {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .rates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 8px;
+        }
+
+        .rate-item {
+            background: var(--bg-secondary);
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            transition: background 0.15s ease;
+        }
+
+        .rate-item:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .rate-item .currency {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            letter-spacing: 0.02em;
+        }
+
+        .rate-item .value {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 24px 16px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .weather-details {
+                grid-template-columns: 1fr;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+
+            .rates-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Dashboard</h1>
+            <p>Currency conversion, weather data, and exchange rates</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('currency')">Currency Converter</button>
+            <button class="tab" onclick="switchTab('weather')">Weather</button>
+            <button class="tab" onclick="switchTab('rates')">Exchange Rates</button>
+        </div>
+
+        <div id="currency" class="panel active">
+            <div class="card">
+                <h2 class="card-title">Convert Currency</h2>
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label>Amount</label>
+                        <input type="number" id="amount" placeholder="0.00" value="1" min="0" step="0.01">
+                    </div>
+                    <div class="input-group">
+                        <label>From</label>
+                        <select id="from">
+                            <option value="USD">USD - US Dollar</option>
+                            <option value="EUR">EUR - Euro</option>
+                            <option value="GBP">GBP - British Pound</option>
+                            <option value="JPY">JPY - Japanese Yen</option>
+                            <option value="CAD">CAD - Canadian Dollar</option>
+                            <option value="AUD">AUD - Australian Dollar</option>
+                            <option value="INR">INR - Indian Rupee</option>
+                            <option value="CHF">CHF - Swiss Franc</option>
+                            <option value="CNY">CNY - Chinese Yuan</option>
+                            <option value="SGD">SGD - Singapore Dollar</option>
+                            <option value="KRW">KRW - South Korean Won</option>
+                            <option value="MXN">MXN - Mexican Peso</option>
+                            <option value="BRL">BRL - Brazilian Real</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>To</label>
+                        <select id="to">
+                            <option value="EUR">EUR - Euro</option>
+                            <option value="USD" selected>USD - US Dollar</option>
+                            <option value="GBP">GBP - British Pound</option>
+                            <option value="JPY">JPY - Japanese Yen</option>
+                            <option value="CAD">CAD - Canadian Dollar</option>
+                            <option value="AUD">AUD - Australian Dollar</option>
+                            <option value="INR">INR - Indian Rupee</option>
+                            <option value="CHF">CHF - Swiss Franc</option>
+                            <option value="CNY">CNY - Chinese Yuan</option>
+                            <option value="SGD">SGD - Singapore Dollar</option>
+                            <option value="KRW">KRW - South Korean Won</option>
+                            <option value="MXN">MXN - Mexican Peso</option>
+                            <option value="BRL">BRL - Brazilian Real</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn" onclick="convertCurrency()">Convert</button>
+                <div id="currencyResult"></div>
+            </div>
+        </div>
+
+        <div id="weather" class="panel">
+            <div class="card">
+                <h2 class="card-title">Check Weather</h2>
+                <div class="form-grid single">
+                    <div class="input-group">
+                        <label>City</label>
+                        <input type="text" id="city" placeholder="Enter city name">
+                    </div>
+                </div>
+                <button class="btn" onclick="getWeather()">Get Weather</button>
+                <div id="weatherResult"></div>
+            </div>
+        </div>
+
+        <div id="rates" class="panel">
+            <div class="card">
+                <div class="rates-header">
+                    <h2 class="card-title" style="margin-bottom: 0;">Live Exchange Rates</h2>
+                    <button class="btn btn-secondary" onclick="loadExchangeRates()">Refresh</button>
+                </div>
+                <div id="ratesResult"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.panel').forEach(panel => panel.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+        }
+
+        function convertCurrency() {
+            const amount = document.getElementById('amount').value;
+            const from = document.getElementById('from').value;
+            const to = document.getElementById('to').value;
+            const resultDiv = document.getElementById('currencyResult');
+
+            if (!amount || amount < 0) {
+                resultDiv.innerHTML = '<div class="error">Please enter a valid amount</div>';
+                return;
+            }
+
+            resultDiv.innerHTML = '<div class="loading">Converting...</div>';
+
+            fetch(`/api/currency?from=${from}&to=${to}&amount=${amount}`)
+                .then(r => r.json())
+                .then(data => {
+                    if (data.error) {
+                        resultDiv.innerHTML = `<div class="error">${data.error}</div>`;
+                        return;
+                    }
+                    
+                    const cachedBadge = data.cached ? '<span class="badge">Cached</span>' : '';
+                    resultDiv.innerHTML = `
+                        <div class="result">
+                            <div class="result-value">${data.amount} ${data.from} = ${data.result.toFixed(2)} ${data.to}</div>
+                            <div class="result-meta">1 ${data.from} = ${data.rate} ${data.to}</div>
+                            <div class="result-date">Rate from ${data.date}${cachedBadge}</div>
+                        </div>
+                    `;
+                })
+                .catch(err => {
+                    resultDiv.innerHTML = '<div class="error">Failed to fetch currency data</div>';
+                });
+        }
+
+        function getWeather() {
+            const city = document.getElementById('city').value.trim();
+            const resultDiv = document.getElementById('weatherResult');
+
+            if (!city) {
+                resultDiv.innerHTML = '<div class="error">Please enter a city name</div>';
+                return;
+            }
+
+            resultDiv.innerHTML = '<div class="loading">Loading weather data...</div>';
+
+            fetch(`/api/weather?city=${city}`)
+                .then(r => r.json())
+                .then(data => {
+                    if (data.error) {
+                        resultDiv.innerHTML = `<div class="error">${data.error}</div>`;
+                        return;
+                    }
+
+                    const iconMap = {
+                        '01d': '☀️', '01n': '🌙',
+                        '02d': '⛅', '02n': '☁️',
+                        '03d': '☁️', '03n': '☁️',
+                        '04d': '☁️', '04n': '☁️',
+                        '09d': '🌧️', '09n': '🌧️',
+                        '10d': '🌦️', '10n': '🌧️',
+                        '11d': '⛈️', '11n': '⛈️',
+                        '13d': '❄️', '13n': '❄️',
+                        '50d': '🌫️', '50n': '🌫️'
+                    };
+                    
+                    const icon = iconMap[data.icon] || '🌡️';
+
+                    resultDiv.innerHTML = `
+                        <div class="weather-card">
+                            <div class="weather-main">
+                                <div class="weather-icon">${icon}</div>
+                                <div class="weather-info">
+                                    <h3>${data.temp}°C</h3>
+                                    <div class="location">${data.city}, ${data.country}</div>
+                                    <div class="desc">${data.description}</div>
+                                </div>
+                            </div>
+                            <div class="weather-details">
+                                <div class="weather-detail">
+                                    <div class="value">${data.feels_like}°</div>
+                                    <div class="label">Feels Like</div>
+                                </div>
+                                <div class="weather-detail">
+                                    <div class="value">${data.humidity}%</div>
+                                    <div class="label">Humidity</div>
+                                </div>
+                                <div class="weather-detail">
+                                    <div class="value">${data.wind} m/s</div>
+                                    <div class="label">Wind</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                })
+                .catch(err => {
+                    resultDiv.innerHTML = '<div class="error">Failed to fetch weather data</div>';
+                });
+        }
+
+        function loadExchangeRates() {
+            const resultDiv = document.getElementById('ratesResult');
+            resultDiv.innerHTML = '<div class="loading">Loading rates...</div>';
+
+            fetch('/api/exchange')
+                .then(r => r.json())
+                .then(data => {
+                    if (!data.rates) {
+                        resultDiv.innerHTML = '<div class="error">Failed to load rates</div>';
+                        return;
+                    }
+
+                    let html = `<div class="rates-base">Base: USD | Date: ${data.date}</div>`;
+                    html += '<div class="rates-grid">';
+                    for (const [currency, rate] of Object.entries(data.rates)) {
+                        html += `
+                            <div class="rate-item">
+                                <div class="currency">${currency}</div>
+                                <div class="value">${rate.toFixed(4)}</div>
+                            </div>
+                        `;
+                    }
+                    html += '</div>';
+
+                    resultDiv.innerHTML = html;
+                })
+                .catch(err => {
+                    resultDiv.innerHTML = '<div class="error">Failed to load exchange rates</div>';
+                });
+        }
+
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const activePanel = document.querySelector('.panel.active');
+                if (activePanel.id === 'currency') convertCurrency();
+                else if (activePanel.id === 'weather') getWeather();
+            }
+        });
+    </script>
+</body>
+</html>
